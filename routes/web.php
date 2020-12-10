@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Models\Post;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,5 +14,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+   //  $posts = DB::table('posts')->where('is_published', 1)->get();
+    $posts = Post::published()->orderBy('id', 'desc')->get();
+
+    // return view('posts', [
+    //     'posts' =>$posts;
+    // )];
+    return view('posts', compact('posts'));
 });
+
+Route::get( '/posts/ {post}' , function(Post $post) {
+
+    //get( '/posts/{id}' , function($id)
+    //$post = Post::findOrFail($id); //radi samo za id
+    return view('post', compact('post'));
+})->name('posts.single');
