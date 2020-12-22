@@ -36,6 +36,10 @@ class Post extends Model
         ]);
     }
 
+    public function author() {
+        return $this->belongsTo(User::class, 'user_id');
+      }
+
     //load nad modelom kada ucitavamo podatke
     //with nad query bilderom
 }

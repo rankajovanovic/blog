@@ -20,7 +20,7 @@ class PostsController extends Controller
     $posts = Post::with('comments', 'tags')
       ->where('is_published', 1)
       ->orderBy('id', 'desc')
-      ->get();
+      ->paginate(10);
       info($posts);
      
 
@@ -57,9 +57,10 @@ class PostsController extends Controller
     // $post->content = $request->content;
     // $post->is_published = $request->get('is_published', false);
     // $post->save();
-  
+    
     $data = $request->validated();
     $post= Post::create($data);
+    //$post=auth()->user()->posts()->create($data);
     $post->tags()->attach($request->tag_id);
     return redirect('/');
   }
