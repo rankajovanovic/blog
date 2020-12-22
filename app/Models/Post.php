@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-
+    protected $fillable = [ 'title', 'content', 'is_published' ];
     public function getSomePostData() {
         return $this->title . ' - ovo je iz metode!';
     }
@@ -20,4 +20,23 @@ class Post extends Model
     public static function unpublished() {
         return self::where('is_published', 0);
     }
+
+    public function comments() {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function tags() {
+        return $this->belongsToMany(Tag::class);
+    }
+
+
+    public function createComment($content) {
+        return $this->comments()->create([
+            'content' => $content
+        ]);
+    }
+
+    //load nad modelom kada ucitavamo podatke
+    //with nad query bilderom
 }
+

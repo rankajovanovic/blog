@@ -1,7 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Post;
+use App\Http\Controllers\PostsController;
+use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\AuthController;
+use App\Http\Middleware\BadAgeMiddleware;
+use App\Http\Controllers\TagsController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,19 +18,69 @@ use App\Models\Post;
 |
 */
 
-Route::get('/', function () {
-   //  $posts = DB::table('posts')->where('is_published', 1)->get();
-    $posts = Post::published()->orderBy('id', 'desc')->get();
 
-    // return view('posts', [
-    //     'posts' =>$posts;
-    // )];
-    return view('posts', compact('posts'));
+// class QueryBuilder {
+//   private $fields = [];
+//   private $conditions = [];
+//   private $order = null;
+
+//   public function __construct() {}
+
+//   public function where($condition) {
+//     $this->conditions[] = $condition;
+//     return $this;
+//   }
+
+//   public function orderBy($order) {
+//     $this->order = $order;
+//     return $this;
+//   }
+
+
+//   public function get() {
+//     $sql ='select * from table where dslfhsljfklvzhfgdxkcj';
+//     $dbConnection->execute($sql);
+//     new Post($row)
+
+//   }
+
+// }
+
+Route::get('/', [PostsController::class, 'index']);
+
+Route::get('/posts/create', [PostsController::class, 'create'])->middleware('auth');
+Route::get('/posts/{post}', [PostsController::class, 'show'])->name('posts.show');
+Route::post('/posts', [PostsController::class, 'store'])->middleware('auth');
+
+Route::get('/tags/create', [TagsController::class, 'create'])->middleware('auth');
+Route::post('/tags', [TagsController::class, 'store'])->middleware('auth');
+
+Route::post('/posts/{post}/comments', [CommentsController::class, 'store'])->name('comments.store')->middleware('auth', 'BadAge');
+
+
+Route::get('/register', [AuthController::class, 'getRegistationForm'])->middleware('guest');
+Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
+
+Route::get('/login', [AuthController::class, 'getLoginForm'])->middleware('guest')->name('login');
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
+
+Route::get('/profile', function () {
+    return auth()->user();
 });
 
-Route::get( '/posts/ {post}' , function(Post $post) {
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 
-    //get( '/posts/{id}' , function($id)
-    //$post = Post::findOrFail($id); //radi samo za id
-    return view('post', compact('post'));
-})->name('posts.single');
+
+
+
+
+
+
+
+
+
+
+
+//$  php artisan make:controller --model=Comment CommentsController 
+
+
